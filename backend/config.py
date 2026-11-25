@@ -1,5 +1,10 @@
 import os
 from pathlib import Path
+try:
+    from dotenv import load_dotenv
+    load_dotenv(Path(__file__).resolve().parent / ".env", override=True)
+except Exception:
+    pass
 
 BASE_DIR = Path(__file__).resolve().parent.parent
 JOBS_DIR = BASE_DIR / "jobs"

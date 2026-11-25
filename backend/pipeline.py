@@ -79,8 +79,6 @@ def run_job(job_id: str, draft: bool = False):
         out = render(job_id, d)
 
         write_status(job_id, "done", 100, "Done", output_url=f"/api/jobs/{job_id}/video")
-        # copy output name
-        shutil.copy2(out, OUTPUTS_DIR / f"{job_id}.mp4")
     except Exception as e:
         write_status(job_id, "error", 0, "Failed", error=str(e))
         raise
