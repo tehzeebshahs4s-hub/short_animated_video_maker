@@ -1,0 +1,16 @@
+# Python
+__pycache__/
+*.pyc
+.env
+jobs/
+outputs/
+
+# Node
+node_modules/
+dist/
+.remotion/
+
+# OS
+.DS_Store
+Thumbs.db
+*.mp4
