@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
-const API = "";
+const API = import.meta.env.VITE_API_BASE || "";
 
 export default function App() {
   const [prompt, setPrompt] = useState("");
@@ -16,7 +16,10 @@ export default function App() {
     const poll = async () => {
       try {
         const r = await fetch(`${API}/api/jobs/${jobId}`);
-        const j = await r.json();
+        const text = await r.text();
+        let j;
+        try { j = JSON.parse(text); } catch (e) { setError("Backend not reachable."); return; }
+        if (!r.ok) { setError(j.detail || j.error || "failed"); return; }
         setStatus(j);
         if (j.stage === "done" || j.stage === "error") {
           clearInterval(pollRef.current);
@@ -45,8 +48,12 @@ export default function App() {
         headers: { "Content-Type": "application/json" },
         body: JSON.stringify({ prompt: prompt.trim(), draft }),
       });
-      const j = await r.json();
-      if (!r.ok) throw new Error(j.detail || "failed");
+      const text = await r.text();
+      let j;
+      try { j = JSON.parse(text); } catch (e) {
+        throw new Error("Backend not reachable (got HTML instead of JSON). Set up the Python app in StackCP panel or VITE_API_BASE.");
+      }
+      if (!r.ok) throw new Error(j.detail || j.error || "failed");
       setJobId(j.jobId);
     } catch (e) {
       setError(String(e));
