@@ -1,6 +1,6 @@
 import React, { useState, useEffect, useRef } from "react";
 
-const API = import.meta.env.VITE_API_BASE || "";
+const API = (typeof window !== "undefined" && (new URLSearchParams(window.location.search).get("api") || localStorage.getItem("apiBase"))) || import.meta.env.VITE_API_BASE || "";
 
 export default function App() {
   const [prompt, setPrompt] = useState("");
@@ -18,7 +18,7 @@ export default function App() {
         const r = await fetch(`${API}/api/jobs/${jobId}`);
         const text = await r.text();
         let j;
-        try { j = JSON.parse(text); } catch (e) { setError("Backend not reachable."); return; }
+        try { j = JSON.parse(text); } catch (e) { setError("Backend not reachable (got HTML)."); return; }
         if (!r.ok) { setError(j.detail || j.error || "failed"); return; }
         setStatus(j);
         if (j.stage === "done" || j.stage === "error") {
@@ -27,7 +27,7 @@ export default function App() {
           setBusy(false);
         }
       } catch (e) {
-        setError(String(e));
+        setError("Backend unreachable: " + (e && e.message ? e.message : String(e)));
       }
     };
     poll();
@@ -56,7 +56,7 @@ export default function App() {
       if (!r.ok) throw new Error(j.detail || j.error || "failed");
       setJobId(j.jobId);
     } catch (e) {
-      setError(String(e));
+      setError("Backend unreachable: " + (e && e.message ? e.message : String(e)));
       setBusy(false);
     }
   };
