@@ -41,8 +41,13 @@ def render(job_id: str, job_dir: Path) -> Path:
         f"--props={props_path}",
         "--overwrite",
         "--bundle-cache=false",
+        "--concurrency=1",
     ]
     env = dict(**__import__("os").environ)
     env["PATH"] = r"C:\Program Files\nodejs;C:\Users\S4S\miniconda3\Library\bin;C:\Users\S4S\miniconda3\Scripts;" + env.get("PATH", "")
-    subprocess.run(cmd, cwd=str(REMOTION_DIR), check=True, env=env)
+    result = subprocess.run(cmd, cwd=str(REMOTION_DIR), check=False, env=env, capture_output=True, text=True)
+    log = REMOTION_DIR / "render.log"
+    log.write_text("STDOUT:\n" + (result.stdout or "") + "\n\nSTDERR:\n" + (result.stderr or ""))
+    if result.returncode != 0:
+        raise RuntimeError(f"remotion render failed (code {result.returncode}): {(result.stderr or '')[-500:]}")
     return out

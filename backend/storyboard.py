@@ -65,8 +65,14 @@ def _normalize(data: dict, job_id: str) -> dict:
         sc.setdefault("transition", "fade")
         sc.setdefault("narration", "")
         sc.setdefault("headline", "")
+        if isinstance(sc.get("bullets"), str):
+            sc["bullets"] = [sc["bullets"]]
         sc.setdefault("bullets", [])
+        if not isinstance(sc["bullets"], list):
+            sc["bullets"] = []
         sc.setdefault("caption", None)
+        if not isinstance(sc.get("visual"), dict):
+            sc["visual"] = {"kind": "text-only"}
         v = sc.setdefault("visual", {"kind": "text-only"})
         kind = str(v.get("kind", "text-only")).lower()
         if kind in ("image", "illustration", "photo", "picture"):

@@ -1,6 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 
 const API = (typeof window !== "undefined" && (new URLSearchParams(window.location.search).get("api") || localStorage.getItem("apiBase"))) || import.meta.env.VITE_API_BASE || "";
+// v2
 
 export default function App() {
   const [prompt, setPrompt] = useState("");
